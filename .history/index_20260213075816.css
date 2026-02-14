@@ -55,7 +55,7 @@ body {
 .hex-content {
     width: 95%;
     height: 95%;
-    background: url("img") center/cover;
+    background: url("img/tu-foto.jpg") center/cover;
     /* aqui va mi fotico ok? */
     background-color: #000;
     clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0% 50%);
@@ -76,6 +76,10 @@ body {
     /* ESTO mueve la tierra a la derecha (creo, es que no me ha funciondo hasta ahora) */
 }
 
+/* ... (tu CSS anterior) ... */
+
+/* ... resto del CSS ... */
+
 #info-box {
     position: absolute;
     /* Cambiamos a absolute para moverlo con JS */
@@ -87,12 +91,15 @@ body {
     border: 1px solid #00ffff;
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
     color: white;
-     font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace;
+    /* Fuente más "hacker" */
     z-index: 100;
     backdrop-filter: blur(4px);
     border-radius: 5px;
     pointer-events: none;
     /* Para que no titile si el mouse pasa por encima */
+
+    /* La transición solo para la opacidad, no para el movimiento (para que no vaya con lag) */
     transition: opacity 0.3s ease-in-out;
 }
 

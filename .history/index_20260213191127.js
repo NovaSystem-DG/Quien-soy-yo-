@@ -119,79 +119,45 @@ light.position.set(5, 5, 5); // orientacionde la luz
 scene.add(light);
 scene.add(new THREE.AmbientLight(0x404040)); // luz general (ni idea que hace)
 
-//* --- 5. el muse ---
+//* --- 5. Interacción (Mouse + Touch) ---
 let isDragging = false;
 let prevMouse = { x: 0, y: 0 };
-let activePin = null; //? Esto nos dice si tenemos un pin seleccionado ok?
+let activePin = null;
 
-// ✨ Detector de clicks (Raycaster)
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-window.addEventListener('click', (event) => {
-    if (isDragging) return; // si estoy moviendo la tierra no quiero que se abra nada
-
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(pins);
-
-    if (intersects.length > 0) {
-        //? SI TOCAMOS UN PIN: le ponemos la info y lo mostramos
-        activePin = intersects[0].object;
-        infoTitle.innerText = activePin.userData.title;
-        infoDesc.innerText = activePin.userData.desc;
-        infoBox.classList.remove('info-box-hidden');
-        infoBox.classList.add('info-box-visible');
-    } else {
-        //? SI TOCAMOS EL VACIO: cerramos la cajita
-        activePin = null;
-        infoBox.classList.add('info-box-hidden');
-        infoBox.classList.remove('info-box-visible');
-    }
-});
-
-window.addEventListener('mousedown', () => isDragging = true);
-window.addEventListener('mouseup', () => isDragging = false);
-window.addEventListener('mousemove', (e) => {
-    if (isDragging) {
-        globeGroup.rotation.y += (e.clientX - prevMouse.x) * 0.005;
-        globeGroup.rotation.x += (e.clientY - prevMouse.y) * 0.005;
-    }
-    prevMouse = { x: e.clientX, y: e.clientY };
-});
-
-// --- Soporte táctil ---
-window.addEventListener('touchstart', (e) => {
+// Función para manejar el inicio del movimiento
+function onPointerDown(x, y) {
     isDragging = true;
-    prevMouse = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-    };
-});
+    prevMouse = { x, y };
+}
 
-window.addEventListener('touchend', () => {
-    isDragging = false;
-});
+// Función para el movimiento
+function onPointerMove(x, y) {
+    if (isDragging) {
+        // Sensibilidad: 0.005 está bien
+        globeGroup.rotation.y += (x - prevMouse.x) * 0.005;
+        globeGroup.rotation.x += (y - prevMouse.y) * 0.005;
+        prevMouse = { x, y };
+    }
+}
+
+// Eventos de Mouse
+window.addEventListener('mousedown', (e) => onPointerDown(e.clientX, e.clientY));
+window.addEventListener('mousemove', (e) => onPointerMove(e.clientX, e.clientY));
+window.addEventListener('mouseup', () => isDragging = false);
+
+// Eventos de Touch (CELULAR)
+window.addEventListener('touchstart', (e) => {
+    // Usamos el primer dedo que toca la pantalla
+    onPointerDown(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: false });
 
 window.addEventListener('touchmove', (e) => {
-    if (isDragging) {
-        const touch = e.touches[0];
+    onPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+    // Evita que la página se mueva mientras giras la tierra
+    if (isDragging) e.preventDefault(); 
+}, { passive: false });
 
-        globeGroup.rotation.y += (touch.clientX - prevMouse.x) * 0.005;
-        globeGroup.rotation.x += (touch.clientY - prevMouse.y) * 0.005;
-
-        prevMouse = {
-            x: touch.clientX,
-            y: touch.clientY
-        };
-    }
-});
-
-window.addEventListener('wheel', (e) => {
-    camera.position.z = Math.min(Math.max(camera.position.z + e.deltaY * 0.002, 2.5), 6);
-});
+window.addEventListener('touchend', () => isDragging = false);
 
 // ✨ FUNCION PARA MOVER LA CAJITA: para que la linea salga del pin
 function updateInfoBoxPosition() {

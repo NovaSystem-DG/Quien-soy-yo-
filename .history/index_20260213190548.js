@@ -1,5 +1,6 @@
 // --- Configuracion de la escena ---
 const container = document.getElementById('globe-container');
+
 // ✨ NUEVO: Estas son las variables para manejar la cajita de info
 const infoBox = document.getElementById('info-box');
 const infoTitle = document.getElementById('info-title');
@@ -162,33 +163,6 @@ window.addEventListener('mousemove', (e) => {
     prevMouse = { x: e.clientX, y: e.clientY };
 });
 
-// --- Soporte táctil ---
-window.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    prevMouse = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY
-    };
-});
-
-window.addEventListener('touchend', () => {
-    isDragging = false;
-});
-
-window.addEventListener('touchmove', (e) => {
-    if (isDragging) {
-        const touch = e.touches[0];
-
-        globeGroup.rotation.y += (touch.clientX - prevMouse.x) * 0.005;
-        globeGroup.rotation.x += (touch.clientY - prevMouse.y) * 0.005;
-
-        prevMouse = {
-            x: touch.clientX,
-            y: touch.clientY
-        };
-    }
-});
-
 window.addEventListener('wheel', (e) => {
     camera.position.z = Math.min(Math.max(camera.position.z + e.deltaY * 0.002, 2.5), 6);
 });
@@ -243,3 +217,4 @@ window.addEventListener('resize', () => {
         globeGroup.position.x = 0.8;
     }
 });
+

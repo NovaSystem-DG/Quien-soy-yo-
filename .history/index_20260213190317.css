@@ -137,3 +137,61 @@ body {
     border-radius: 50%;
     box-shadow: 0 0 8px #00ffff;
 }
+
+
+/* Responsable (RESPONSIVE) */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto; 
+    }
+
+    .main-layout {
+        flex-direction: column; 
+        justify-content: flex-start;
+        padding: 40px 5%;
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .profile-section {
+        flex: 0 0 auto;
+        width: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .hex-outer-glow {
+        width: 180px;
+        height: 180px;
+    }
+
+    .name-tag h1 {
+        font-size: 1.5rem; 
+    }
+
+    /* EL CONTENEDOR DE LA TIERRA */
+    #globe-container {
+        width: 100vw !important; 
+        height: 400px !important; 
+        margin-right: 0;
+        margin-bottom: 20px;
+    }
+
+
+    #info-box {
+        position: fixed; 
+        bottom: 20px;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        top: auto !important;
+        width: 85%;
+        box-sizing: border-box;
+    }
+
+    .connector-line {
+        display: none; /* En celular la línea conectora estorba, mejor quitarla */
+    }
+}

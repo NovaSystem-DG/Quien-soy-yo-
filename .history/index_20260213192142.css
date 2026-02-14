@@ -137,3 +137,61 @@ body {
     border-radius: 50%;
     box-shadow: 0 0 8px #00ffff;
 }
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1024px) {
+    #globe-container {
+        width: 450px;
+        height: 450px;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .main-layout {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 20px;
+        height: auto;
+        gap: 40px;
+    }
+
+    .profile-section {
+        flex: none;
+    }
+
+    .hex-outer-glow {
+        width: 160px;
+        height: 160px;
+        margin: 0 auto 20px;
+    }
+
+    .name-tag h1 {
+        font-size: 1.6rem;
+        letter-spacing: 2px;
+    }
+
+    #globe-container {
+        width: 320px;
+        height: 320px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .hex-outer-glow {
+        width: 130px;
+        height: 130px;
+    }
+
+    .name-tag h1 {
+        font-size: 1.3rem;
+    }
+
+    #globe-container {
+        width: 260px;
+        height: 260px;
+    }
+}

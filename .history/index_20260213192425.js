@@ -162,7 +162,7 @@ window.addEventListener('mousemove', (e) => {
     prevMouse = { x: e.clientX, y: e.clientY };
 });
 
-// --- Soporte táctil ---
+// --- Soporte táctil para celular ---
 window.addEventListener('touchstart', (e) => {
     isDragging = true;
     prevMouse = {

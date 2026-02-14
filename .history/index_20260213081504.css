@@ -87,12 +87,15 @@ body {
     border: 1px solid #00ffff;
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
     color: white;
-     font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace;
+    /* Fuente más "hacker" */
     z-index: 100;
     backdrop-filter: blur(4px);
     border-radius: 5px;
     pointer-events: none;
     /* Para que no titile si el mouse pasa por encima */
+
+    /* La transición solo para la opacidad, no para el movimiento (para que no vaya con lag) */
     transition: opacity 0.3s ease-in-out;
 }
 

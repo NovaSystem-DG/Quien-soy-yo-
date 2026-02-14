@@ -193,13 +193,13 @@ window.addEventListener('wheel', (e) => {
     camera.position.z = Math.min(Math.max(camera.position.z + e.deltaY * 0.002, 2.5), 6);
 });
 
-// ✨ FUNCION PARA MOVER LA CAJITA: para que la linea salga del pin
+
 function updateInfoBoxPosition() {
     if (!activePin) return;
 
     const vector = new THREE.Vector3();
-    activePin.getWorldPosition(vector); // saca la posicion real del pin
-    vector.project(camera); // lo pasa de 3D a tu pantalla 2D
+    activePin.getWorldPosition(vector); 
+    vector.project(camera); 
 
     const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
     const y = (-(vector.y * 0.5) + 0.5) * window.innerHeight;

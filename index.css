@@ -6,15 +6,16 @@ body {
     overflow: hidden;
 }
 
+* {
+  touch-action: manipulation;
+}
+
+
 .main-layout {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 100vh;
-    padding: 0 5%;
     position: relative;
     z-index: 10;
 }
+
 
 .profile-section {
     flex: 0 0 350px;
@@ -72,15 +73,14 @@ body {
 #globe-container {
     width: 600px;
     height: 600px;
-    margin-right: -50px;
-    /* ESTO mueve la tierra a la derecha (creo, es que no me ha funciondo hasta ahora) */
 }
+
+
 
 #info-box {
     position: absolute;
-    /* Cambiamos a absolute para moverlo con JS */
-    /* Quitamos top y left fijos, JS los calculará */
-    width: 300px;
+    
+    width: clamp(250px, 25vw, 350px);
     padding: 20px;
     background: rgba(0, 10, 20, 0.85);
     /* Un poco más oscuro */
@@ -137,3 +137,71 @@ body {
     border-radius: 50%;
     box-shadow: 0 0 8px #00ffff;
 }
+
+/* ========================= */
+/* 📱 RESPONSIVE CELULAR */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+    body {
+        overflow: auto;
+    }
+
+    .main-layout {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: auto;
+        padding: 40px 20px;
+        gap: 40px;
+    }
+
+    .profile-section {
+        flex: none;
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .hex-outer-glow {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 20px;
+    }
+
+    .name-tag h1 {
+        font-size: 1.5rem;
+        letter-spacing: 2px;
+    }
+
+    .name-tag h3 {
+        font-size: 1rem;
+    }
+
+    #globe-container {
+        width: 100%;
+        height: 400px;
+        margin: 0;
+    }
+
+    #info-box {
+        width: 85%;
+        max-width: 300px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+
+  .profile-section {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    text-align: center;
+  }
+
+}
+
+

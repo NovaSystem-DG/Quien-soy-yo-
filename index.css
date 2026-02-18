@@ -7,7 +7,7 @@ body {
 }
 
 * {
-  touch-action: manipulation;
+    touch-action: manipulation;
 }
 
 
@@ -37,6 +37,7 @@ body {
 
 /* triangulo (si no sabe de figuras geometricas no opine) */
 .hex-outer-glow {
+    margin-left: 19%;
     filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6));
     width: 220px;
     height: 220px;
@@ -75,11 +76,20 @@ body {
     height: 600px;
 }
 
+.profile-section {
+    position: fixed;
+    top: 60px;
+    left: 20%;
+    transform: translateX(-50%);
+    z-index: 20;
+    text-align: center;
+    animation: none;
+}
+
 
 
 #info-box {
     position: absolute;
-    
     width: clamp(250px, 25vw, 350px);
     padding: 20px;
     background: rgba(0, 10, 20, 0.85);
@@ -87,7 +97,7 @@ body {
     border: 1px solid #00ffff;
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
     color: white;
-     font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, monospace;
     z-index: 100;
     backdrop-filter: blur(4px);
     border-radius: 5px;
@@ -193,71 +203,74 @@ body {
 
 @media (max-width: 768px) {
 
-  .profile-section {
-    position: fixed;
-    top: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 20;
-    text-align: center;
-    animation: none; 
-  }
+    .profile-section {
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        text-align: center;
+        animation: none;
+    }
 
-  html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  touch-action: none;
-}
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        touch-action: none;
+    }
 }
 
 @media (max-width: 768px) and (orientation: portrait) {
 
-  .hex-outer-glow  {
-    width: 160px;       
-    height: 160px;
-    animation: none;    
-  }
+    .hex-outer-glow {
+        width: 160px;
+        height: 160px;
+        animation: none;
+    }
 
 }
 
 
 @media (max-width: 500px) and (orientation: landscape) {
 
-  .hex-outer-glow {
-    width: 90px;
-    height: 90px;
-  }
+    .hex-outer-glow {
+        width: 90px;
+        height: 90px;
+    }
 
-  .name-tag h1 {
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-  }
+    .name-tag h1 {
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+    }
 
-  .profile-section {
-    top: 20px;
-  }
+    .profile-section {
+        top: 20px;
+    }
 }
+
 @media (orientation: landscape) and (max-height: 500px) {
 
-  .hex-outer-glow {
-    margin-left: 10%;
-    width: 140px;
-    height: 140px;
-  }
+    .hex-outer-glow {
+        margin-left: 10%;
+        width: 140px;
+        height: 140px;
+    }
 
-  .name-tag h1 {
-    font-size: 1rem;
-    letter-spacing: 2px;
+    .name-tag h1 {
+        font-size: 1rem;
+        letter-spacing: 2px;
 
-  }
-.profile-section {
-    position: fixed;
-    top: 60px;
-    left: 20%;
-    transform: translateX(-50%);
-    text-align: center;
-    animation: none; 
-  }
- 
+    }
+
+    .profile-section {
+        position: fixed;
+        top: 60px;
+        left: 20%;
+        transform: translateX(-50%);
+        text-align: center;
+        animation: none;
+    }
+
 }

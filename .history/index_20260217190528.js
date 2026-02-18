@@ -249,7 +249,6 @@ window.addEventListener("wheel", (e) => {
     6
   );
 }); 
-
 window.addEventListener("touchend", () => {
   isDragging = false;
   initialPinchDistance = null;

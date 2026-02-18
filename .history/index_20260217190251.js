@@ -243,13 +243,6 @@ window.addEventListener(
   { passive: false },
 );
 
-window.addEventListener("wheel", (e) => {
-  camera.position.z = Math.min(
-    Math.max(camera.position.z + e.deltaY * 0.002, 2),
-    6
-  );
-}); 
-
 window.addEventListener("touchend", () => {
   isDragging = false;
   initialPinchDistance = null;

@@ -214,8 +214,8 @@ body {
 @media (max-width: 768px) and (orientation: portrait) {
 
   .hex-outer-glow  {
-    width: 160px;       
-    height: 160px;
+    width: 90px;       
+    height: 90px;
     animation: none;    
   }
 
@@ -241,15 +241,14 @@ body {
 @media (orientation: landscape) and (max-height: 500px) {
 
   .hex-outer-glow {
-    margin-left: 10%;
-    width: 140px;
-    height: 140px;
+    width: 90px;left: 20%;
+    height: 90px;
   }
 
   .name-tag h1 {
     font-size: 1rem;
     letter-spacing: 2px;
-
+    text-align: center;
   }
 .profile-section {
     position: fixed;

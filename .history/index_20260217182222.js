@@ -1,18 +1,13 @@
-let isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
-let initialPinchDistance = null;
-let initialCameraZ = 4;
-let isDragging = false;
-let prevMouse = { x: 0, y: 0 };
-let activePin = null;
-
 // --- Configuracion de la escena ---
 const container = document.getElementById("globe-container");
+// ✨ NUEVO: Estas son las variables para manejar la cajita de info
 const infoBox = document.getElementById("info-box");
 const infoTitle = document.getElementById("info-title");
 const infoDesc = document.getElementById("info-desc");
 
 const scene = new THREE.Scene();
 
+// La cámara: el primer número (45) es qué tan "angular" es la vista, el último (4) es la distancia inicial
 const camera = new THREE.PerspectiveCamera(
   45,
   window.innerWidth / window.innerHeight,
@@ -21,13 +16,9 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 4;
 
-// --- Renderer optimizado ---
-const renderer = new THREE.WebGLRenderer({
-  alpha: true,
-  antialias: window.innerWidth > 768,
-});
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+// 🔥 El canvas es FONDO COMPLETO
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
@@ -35,17 +26,15 @@ renderer.domElement.style.position = "fixed";
 renderer.domElement.style.top = "0";
 renderer.domElement.style.left = "0";
 renderer.domElement.style.zIndex = "1";
-renderer.domElement.style.touchAction = "none"; // evita scroll del navegador
 
-// --- Fondo de estrellas ---
+//* --- 1. Fondo de estrellitas si si (lo hago en cada proyecto) ---
 const starsGeometry = new THREE.BufferGeometry();
-const starsCount = 1500;
+const starsCount = 1500; // esto es pa poner mas estrellistas ok?
 const posArray = new Float32Array(starsCount * 3);
 
 for (let i = 0; i < starsCount * 3; i++) {
   posArray[i] = (Math.random() - 0.5) * 10;
 }
-
 starsGeometry.setAttribute("position", new THREE.BufferAttribute(posArray, 3));
 
 const starsMaterial = new THREE.PointsMaterial({
@@ -54,35 +43,37 @@ const starsMaterial = new THREE.PointsMaterial({
   transparent: true,
   opacity: 0.8,
 });
-
 const starField = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(starField);
 
-// --- Texturas ---
+//* --- 2. texturaaaa ---
 const textureLoader = new THREE.TextureLoader();
 const earthTex = textureLoader.load(
   "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
 );
 const pinTex = textureLoader.load("img/pin.png");
 
-// --- Grupo del globo ---
+//? EL GRUPO: Esto es como un bolso, metemos todo dentro para moverlo fácil
 const globeGroup = new THREE.Group();
 scene.add(globeGroup);
 
+//? DE ACA SE MUEEVE LA TIERRA HACIA LA DERECHA - mas alto el número, más se aleja
+globeGroup.position.x = window.innerWidth < 768 ? 0 : 0.8;
+
+//? TAMAÑO DE LA TIERRA El 1.3 es el radio Si la quiero mas grande ponele 1.8 a eso cosa
 const geometry = new THREE.SphereGeometry(1.3, 64, 64);
 
 const material = new THREE.MeshPhongMaterial({
   map: earthTex,
   color: 0x00ccff,
   transparent: true,
-  opacity: 0.6,
+  opacity: 0.6, // opacidad de la tierra
   emissive: 0x002233,
 });
-
 const globe = new THREE.Mesh(geometry, material);
 globeGroup.add(globe);
 
-// Atmosfera
+// Atmosfera, que se supone que es el brillo, pero no brilla mucho la verdad
 const atmoGeom = new THREE.SphereGeometry(1.32, 64, 64);
 const atmoMat = new THREE.MeshBasicMaterial({
   color: 0x00ffff,
@@ -93,9 +84,10 @@ const atmoMat = new THREE.MeshBasicMaterial({
 const atmosphere = new THREE.Mesh(atmoGeom, atmoMat);
 globeGroup.add(atmosphere);
 
-// --- Pines ---
+//* --- 3. Ubicaciones de los pines ---
 const pins = [];
 
+// ✨ NUEVO: Ahora le pasamos el texto que queremos que diga cada pin
 function addPoint(lat, lon, title, desc) {
   const r = 1.3;
   const phi = (90 - lat) * (Math.PI / 180);
@@ -110,18 +102,20 @@ function addPoint(lat, lon, title, desc) {
   pin.scale.set(0.12, 0.12, 1);
   pin.position.set(x, y, z);
 
+  //? Guardamos la info del pin para que aparezca al darle click
   pin.userData = {
     basePos: new THREE.Vector3(x, y, z),
     dir: new THREE.Vector3(x, y, z).normalize(),
     offset: Math.random() * 10,
-    title,
-    desc,
+    title: title,
+    desc: desc,
   };
 
   globeGroup.add(pin);
   pins.push(pin);
 }
 
+//? ESTO ES PARA PONER MAS LOCATIONs pero toca buscar la latitud y longitud en google
 addPoint(
   4,
   -72,
@@ -137,13 +131,18 @@ addPoint(
 addPoint(56.13, -106.34, "CANADA", "Mucho frío pero paisajes increíbles.");
 addPoint(36.2, 138.25, "JAPON", "El futuro y el pasado en un solo lugar.");
 
-// --- Luces ---
+//* --- luiz ---
 const light = new THREE.PointLight(0xffffff, 1.2);
-light.position.set(5, 5, 5);
+light.position.set(5, 5, 5); // orientacion de la luz
 scene.add(light);
-scene.add(new THREE.AmbientLight(0x404040));
+scene.add(new THREE.AmbientLight(0x404040)); // luz general (ni idea que hace)
 
-// --- Raycaster ---
+//* --- 5. el muse ---
+let isDragging = false;
+let prevMouse = { x: 0, y: 0 };
+let activePin = null; //? Esto nos dice si tenemos un pin seleccionado ok?
+
+// ✨ Detector de clicks (Raycaster)
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
@@ -169,7 +168,6 @@ window.addEventListener("click", (event) => {
   }
 });
 
-// --- Mouse ---
 window.addEventListener("mousedown", () => (isDragging = true));
 window.addEventListener("mouseup", () => (isDragging = false));
 
@@ -181,81 +179,40 @@ window.addEventListener("mousemove", (e) => {
   prevMouse = { x: e.clientX, y: e.clientY };
 });
 
-// --- Touch ---
-window.addEventListener(
-  "touchstart",
-  (e) => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const isPortrait = height > width;
-
-    if (e.touches.length === 1) {
-      isDragging = true;
-      prevMouse = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-      };
-    }
-
-    if (e.touches.length === 2 && !isPortrait) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
-      initialCameraZ = camera.position.z;
-      isDragging = false;
-    }
-  },
-  { passive: false },
-);
-
-window.addEventListener(
-  "touchmove",
-  (e) => {
-    e.preventDefault();
-
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const isPortrait = height > width;
-
-    // Rotación con un dedo
-    if (e.touches.length === 1 && isDragging) {
-      const touch = e.touches[0];
-      globeGroup.rotation.y += (touch.clientX - prevMouse.x) * 0.005;
-      globeGroup.rotation.x += (touch.clientY - prevMouse.y) * 0.005;
-
-      prevMouse = {
-        x: touch.clientX,
-        y: touch.clientY,
-      };
-    }
-
-    // Zoom con dos dedos solo en horizontal
-    if (e.touches.length === 2 && initialPinchDistance && !isPortrait) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const currentDistance = Math.sqrt(dx * dx + dy * dy);
-
-      const zoomFactor = initialPinchDistance / currentDistance;
-
-      camera.position.z = Math.min(Math.max(initialCameraZ * zoomFactor, 2), 6);
-    }
-  },
-  { passive: false },
-);
-
-window.addEventListener("wheel", (e) => {
-  camera.position.z = Math.min(
-    Math.max(camera.position.z + e.deltaY * 0.002, 2),
-    6
-  );
-}); 
+// --- Soporte táctil ---
+window.addEventListener("touchstart", (e) => {
+  isDragging = true;
+  prevMouse = {
+    x: e.touches[0].clientX,
+    y: e.touches[0].clientY,
+  };
+});
 
 window.addEventListener("touchend", () => {
   isDragging = false;
-  initialPinchDistance = null;
 });
 
-// --- Info box ---
+window.addEventListener("touchmove", (e) => {
+  if (isDragging) {
+    const touch = e.touches[0];
+
+    globeGroup.rotation.y += (touch.clientX - prevMouse.x) * 0.005;
+    globeGroup.rotation.x += (touch.clientY - prevMouse.y) * 0.005;
+
+    prevMouse = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+  }
+});
+
+window.addEventListener("wheel", (e) => {
+  camera.position.z = Math.min(
+    Math.max(camera.position.z + e.deltaY * 0.002, 2.5),
+    6,
+  );
+});
+
 function updateInfoBoxPosition() {
   if (!activePin) return;
 
@@ -266,30 +223,29 @@ function updateInfoBoxPosition() {
   const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
   const y = (-(vector.y * 0.5) + 0.5) * window.innerHeight;
 
-  infoBox.style.left = `${x + 50}px`;
+  infoBox.style.left = `${x + 60}px`;
   infoBox.style.top = `${y - 20}px`;
 }
 
-// --- Animación ---
+//* --- 6. esta es la animacion que se ejecuta cada 60 segundos creo ---
 function animate() {
   requestAnimationFrame(animate);
   const time = Date.now() * 0.002;
 
-  if (!isDragging && !activePin && !isMobileDevice)
-    globeGroup.rotation.y += 0.001;
+  //? gira solo si no lo muevo yo y si no hay info abierta
+  if (!isDragging && !activePin) globeGroup.rotation.y += 0.001;
 
+  //? si hay info abierta, que la caja siga al pin
   if (activePin) updateInfoBoxPosition();
 
   starsMaterial.opacity = 0.5 + Math.sin(time * 0.5) * 0.4;
 
-  if (!activePin) {
-    pins.forEach((p) => {
-      const bounce = Math.sin(time + p.userData.offset) * 0.03;
-      p.position
-        .copy(p.userData.basePos)
-        .addScaledVector(p.userData.dir, bounce + 0.08);
-    });
-  }
+  pins.forEach((p) => {
+    const bounce = Math.sin(time + p.userData.offset) * 0.03;
+    p.position
+      .copy(p.userData.basePos)
+      .addScaledVector(p.userData.dir, bounce + 0.08);
+  });
 
   renderer.render(scene, camera);
 }
@@ -297,8 +253,8 @@ animate();
 
 // --- Responsive ---
 function handleResize() {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  const width = document.documentElement.clientWidth;
+  const height = document.documentElement.clientHeight;
 
   const isMobile = width < 768;
   const isPortrait = height > width;
@@ -308,21 +264,23 @@ function handleResize() {
   renderer.setSize(width, height);
 
   if (isMobile && isPortrait) {
-    globeGroup.position.set(0, -1.2, 0);
-    globeGroup.scale.set(0.9, 0.9, 0.9);
+    // 🔥 Vertical móvil
+    globeGroup.position.x = 0;
+    globeGroup.position.y = -1.2; // BAJA bastante la tierra
     camera.position.z = 3;
   } else if (isMobile) {
-    globeGroup.position.set(0, 0, 0);
-    globeGroup.scale.set(1, 1, 1);
-    camera.position.z = 2.8;
+    // 🔥 Horizontal móvil
+    globeGroup.position.x = 0;
+    globeGroup.position.y = 0;
+    camera.position.z = 2.5;
   } else {
-    globeGroup.position.set(0.8, 0, 0);
-    globeGroup.scale.set(0.9, 0.9, 0.9);
+    // 🔥 Desktop
+    globeGroup.position.x = 0.8;
+    globeGroup.position.y = 0;
     camera.position.z = 3;
   }
 }
 
-handleResize();
 window.addEventListener("resize", handleResize);
 window.addEventListener("orientationchange", () => {
   setTimeout(handleResize, 200);

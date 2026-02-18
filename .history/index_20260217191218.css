@@ -214,50 +214,27 @@ body {
 @media (max-width: 768px) and (orientation: portrait) {
 
   .hex-outer-glow  {
-    width: 160px;       
-    height: 160px;
+    width: 90px;       
+    height: 90px;
     animation: none;    
   }
 
 }
 
-
-@media (max-width: 500px) and (orientation: landscape) {
+@media (max-width: 768px) and (orientation: landscape) {
 
   .hex-outer-glow {
-    width: 90px;
-    height: 90px;
+    width: 120px;
+    height: 120px;
   }
 
   .name-tag h1 {
-    font-size: 1.1rem;
-    letter-spacing: 2px;
+    font-size: 1.6rem;
   }
 
-  .profile-section {
-    top: 20px;
+  .name-tag h3 {
+    font-size: 0.8rem;
   }
+  
 }
-@media (orientation: landscape) and (max-height: 500px) {
 
-  .hex-outer-glow {
-    margin-left: 10%;
-    width: 140px;
-    height: 140px;
-  }
-
-  .name-tag h1 {
-    font-size: 1rem;
-    letter-spacing: 2px;
-
-  }
-.profile-section {
-    position: fixed;
-    top: 60px;
-    left: 20%;
-    transform: translateX(-50%);
-    text-align: center;
-    animation: none; 
-  }
- 
-}

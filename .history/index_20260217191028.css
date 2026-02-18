@@ -214,50 +214,28 @@ body {
 @media (max-width: 768px) and (orientation: portrait) {
 
   .hex-outer-glow  {
-    width: 160px;       
-    height: 160px;
+    width: 90px;       
+    height: 90px;
     animation: none;    
   }
 
 }
 
+@media (max-width: 768px) and (orientation: landscape) {
 
-@media (max-width: 500px) and (orientation: landscape) {
-
-  .hex-outer-glow {
-    width: 90px;
-    height: 90px;
-  }
-
-  .name-tag h1 {
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-  }
-
+  /* Reducir todo el bloque del perfil */
   .profile-section {
-    top: 20px;
-  }
-}
-@media (orientation: landscape) and (max-height: 500px) {
-
-  .hex-outer-glow {
-    margin-left: 10%;
-    width: 140px;
-    height: 140px;
+    transform: scale(0.75);
+    transform-origin: left center;
   }
 
+  /* Ajustar el texto del nombre */
   .name-tag h1 {
-    font-size: 1rem;
-    letter-spacing: 2px;
+    font-size: 1.8rem;
+  }
 
+  .name-tag h3 {
+    font-size: 0.9rem;
   }
-.profile-section {
-    position: fixed;
-    top: 60px;
-    left: 20%;
-    transform: translateX(-50%);
-    text-align: center;
-    animation: none; 
-  }
- 
 }
+

@@ -248,8 +248,7 @@ window.addEventListener("wheel", (e) => {
     Math.max(camera.position.z + e.deltaY * 0.002, 2),
     6
   );
-}); 
-
+});
 window.addEventListener("touchend", () => {
   isDragging = false;
   initialPinchDistance = null;

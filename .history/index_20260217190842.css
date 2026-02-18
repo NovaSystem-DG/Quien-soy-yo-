@@ -209,55 +209,33 @@ body {
   overflow: hidden;
   touch-action: none;
 }
+
+
+
 }
 
 @media (max-width: 768px) and (orientation: portrait) {
 
   .hex-outer-glow  {
-    width: 160px;       
-    height: 160px;
+    width: 90px;       
+    height: 90px;
     animation: none;    
   }
 
 }
 
-
-@media (max-width: 500px) and (orientation: landscape) {
-
-  .hex-outer-glow {
-    width: 90px;
-    height: 90px;
-  }
-
-  .name-tag h1 {
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-  }
-
-  .profile-section {
-    top: 20px;
-  }
-}
-@media (orientation: landscape) and (max-height: 500px) {
-
-  .hex-outer-glow {
-    margin-left: 10%;
-    width: 140px;
-    height: 140px;
-  }
-
-  .name-tag h1 {
-    font-size: 1rem;
-    letter-spacing: 2px;
-
-  }
+@media (max-width: 768px) and (orientation: landscape) {
 .profile-section {
     position: fixed;
     top: 60px;
-    left: 20%;
+    left: 50%;
     transform: translateX(-50%);
+    z-index: 20;
     text-align: center;
     animation: none; 
   }
- 
+
 }
+
+
+

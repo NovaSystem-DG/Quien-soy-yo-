@@ -24,7 +24,7 @@ camera.position.z = 4;
 // --- Renderer optimizado ---
 const renderer = new THREE.WebGLRenderer({
   alpha: true,
-  antialias: window.innerWidth > 768,
+  antialias: window.innerWidth > 768
 });
 
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
@@ -122,18 +122,8 @@ function addPoint(lat, lon, title, desc) {
   pins.push(pin);
 }
 
-addPoint(
-  4,
-  -72,
-  "CHOCO, COLOMBIA",
-  "Mi tierra linda, donde la selva toca el mar.",
-);
-addPoint(
-  50.93,
-  6.95,
-  "CATEDRAL DE COLONIA",
-  "Una iglesia gigante en Alemania que es puro arte.",
-);
+addPoint(4, -72, "CHOCO, COLOMBIA", "Mi tierra linda, donde la selva toca el mar.");
+addPoint(50.93, 6.95, "CATEDRAL DE COLONIA", "Una iglesia gigante en Alemania que es puro arte.");
 addPoint(56.13, -106.34, "CANADA", "Mucho frío pero paisajes increíbles.");
 addPoint(36.2, 138.25, "JAPON", "El futuro y el pasado en un solo lugar.");
 
@@ -182,73 +172,62 @@ window.addEventListener("mousemove", (e) => {
 });
 
 // --- Touch ---
-window.addEventListener(
-  "touchstart",
-  (e) => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const isPortrait = height > width;
+window.addEventListener("touchstart", (e) => {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const isPortrait = height > width;
 
-    if (e.touches.length === 1) {
-      isDragging = true;
-      prevMouse = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-      };
-    }
+  if (e.touches.length === 1) {
+    isDragging = true;
+    prevMouse = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  }
 
-    if (e.touches.length === 2 && !isPortrait) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
-      initialCameraZ = camera.position.z;
-      isDragging = false;
-    }
-  },
-  { passive: false },
-);
+  if (e.touches.length === 2 && !isPortrait) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
+    initialCameraZ = camera.position.z;
+    isDragging = false;
+  }
+}, { passive: false });
 
-window.addEventListener(
-  "touchmove",
-  (e) => {
-    e.preventDefault();
+window.addEventListener("touchmove", (e) => {
+  e.preventDefault();
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const isPortrait = height > width;
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  const isPortrait = height > width;
 
-    // Rotación con un dedo
-    if (e.touches.length === 1 && isDragging) {
-      const touch = e.touches[0];
-      globeGroup.rotation.y += (touch.clientX - prevMouse.x) * 0.005;
-      globeGroup.rotation.x += (touch.clientY - prevMouse.y) * 0.005;
+  // Rotación con un dedo
+  if (e.touches.length === 1 && isDragging) {
+    const touch = e.touches[0];
+    globeGroup.rotation.y += (touch.clientX - prevMouse.x) * 0.005;
+    globeGroup.rotation.x += (touch.clientY - prevMouse.y) * 0.005;
 
-      prevMouse = {
-        x: touch.clientX,
-        y: touch.clientY,
-      };
-    }
+    prevMouse = {
+      x: touch.clientX,
+      y: touch.clientY,
+    };
+  }
 
-    // Zoom con dos dedos solo en horizontal
-    if (e.touches.length === 2 && initialPinchDistance && !isPortrait) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const currentDistance = Math.sqrt(dx * dx + dy * dy);
+  // Zoom con dos dedos solo en horizontal
+  if (e.touches.length === 2 && initialPinchDistance && !isPortrait) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const currentDistance = Math.sqrt(dx * dx + dy * dy);
 
-      const zoomFactor = initialPinchDistance / currentDistance;
+    const zoomFactor = initialPinchDistance / currentDistance;
 
-      camera.position.z = Math.min(Math.max(initialCameraZ * zoomFactor, 2), 6);
-    }
-  },
-  { passive: false },
-);
+    camera.position.z = Math.min(
+      Math.max(initialCameraZ * zoomFactor, 2),
+      6
+    );
+  }
 
-window.addEventListener("wheel", (e) => {
-  camera.position.z = Math.min(
-    Math.max(camera.position.z + e.deltaY * 0.002, 2),
-    6
-  );
-}); 
+}, { passive: false });
 
 window.addEventListener("touchend", () => {
   isDragging = false;
@@ -278,7 +257,8 @@ function animate() {
   if (!isDragging && !activePin && !isMobileDevice)
     globeGroup.rotation.y += 0.001;
 
-  if (activePin) updateInfoBoxPosition();
+  if (activePin)
+    updateInfoBoxPosition();
 
   starsMaterial.opacity = 0.5 + Math.sin(time * 0.5) * 0.4;
 

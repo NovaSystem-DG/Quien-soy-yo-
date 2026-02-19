@@ -1,53 +1,78 @@
+//* Detecta si el usuario está en un celular o tablet
 let isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
+
+//* Variables para zoom táctil
 let initialPinchDistance = null;
 let initialCameraZ = 4;
+
+//* Variables para rotación con mouse o dedo
 let isDragging = false;
 let prevMouse = { x: 0, y: 0 };
+
+//* Pin seleccionado actualmente
 let activePin = null;
 
-// --- Configuracion de la escena ---
+//? ===============================
+//? CONFIGURACIÓN DE LA ESCENA
+//? ===============================
+
+//* Elementos del HTML
 const container = document.getElementById("globe-container");
 const infoBox = document.getElementById("info-box");
 const infoTitle = document.getElementById("info-title");
 const infoDesc = document.getElementById("info-desc");
 
+//* Escena principal
 const scene = new THREE.Scene();
 
+//* Cámara
 const camera = new THREE.PerspectiveCamera(
   45,
   window.innerWidth / window.innerHeight,
   0.1,
   1000,
 );
-camera.position.z = 4;
+camera.position.z = 4; // distancia inicial de la cámara
 
-// --- Renderer optimizado ---
+//? ===============================
+//? RENDERIZADOR
+//? ===============================
+
+//* Motor gráfico que dibuja la escena
 const renderer = new THREE.WebGLRenderer({
-  alpha: true,
-  antialias: window.innerWidth > 768,
+  alpha: true, // fondo transparente
+  antialias: window.innerWidth > 768, // suavizado en pantallas grandes
 });
 
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
+
+//* Agrega el canvas al body
 document.body.appendChild(renderer.domElement);
 
+//* Posiciona el canvas detrás del contenido
 renderer.domElement.style.position = "fixed";
 renderer.domElement.style.top = "0";
 renderer.domElement.style.left = "0";
 renderer.domElement.style.zIndex = "1";
-renderer.domElement.style.touchAction = "none"; // evita scroll del navegador
+renderer.domElement.style.touchAction = "none";
 
-// --- Fondo de estrellas ---
+//? ===============================
+//? FONDO DE ESTRELLAS
+//? ===============================
+
 const starsGeometry = new THREE.BufferGeometry();
 const starsCount = 1500;
-const posArray = new Float32Array(starsCount * 3);
 
+//* Posiciones aleatorias para las estrellas
+const posArray = new Float32Array(starsCount * 3);
 for (let i = 0; i < starsCount * 3; i++) {
   posArray[i] = (Math.random() - 0.5) * 10;
 }
 
 starsGeometry.setAttribute("position", new THREE.BufferAttribute(posArray, 3));
 
+//* Material de las estrellas
 const starsMaterial = new THREE.PointsMaterial({
   size: 0.015,
   color: 0xffffff,
@@ -55,22 +80,36 @@ const starsMaterial = new THREE.PointsMaterial({
   opacity: 0.8,
 });
 
+//* Objeto de estrellas
 const starField = new THREE.Points(starsGeometry, starsMaterial);
 scene.add(starField);
 
-// --- Texturas ---
+//? ===============================
+//? TEXTURAS
+//? ===============================
+
 const textureLoader = new THREE.TextureLoader();
+
+//* Textura del planeta
 const earthTex = textureLoader.load(
   "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
 );
+
+//* Textura del pin
 const pinTex = textureLoader.load("img/pin.png");
 
-// --- Grupo del globo ---
+//? ===============================
+//? GLOBO TERRÁQUEO
+//? ===============================
+
+//* Grupo que contiene todo el planeta
 const globeGroup = new THREE.Group();
 scene.add(globeGroup);
 
+//* Geometría de la esfera
 const geometry = new THREE.SphereGeometry(1.3, 64, 64);
 
+//* Material del planeta
 const material = new THREE.MeshPhongMaterial({
   map: earthTex,
   color: 0x00ccff,
@@ -79,25 +118,38 @@ const material = new THREE.MeshPhongMaterial({
   emissive: 0x002233,
 });
 
+//* Malla del planeta
 const globe = new THREE.Mesh(geometry, material);
 globeGroup.add(globe);
 
-// Atmosfera
+//? ===============================
+//? ATMÓSFERA
+//? ===============================
+
+//* Esfera un poco más grande para el brillo exterior
 const atmoGeom = new THREE.SphereGeometry(1.32, 64, 64);
+
 const atmoMat = new THREE.MeshBasicMaterial({
   color: 0x00ffff,
   transparent: true,
   opacity: 0.15,
   side: THREE.BackSide,
 });
+
 const atmosphere = new THREE.Mesh(atmoGeom, atmoMat);
 globeGroup.add(atmosphere);
 
-// --- Pines ---
+//? ===============================
+//? PINES EN EL GLOBO
+//? ===============================
+
 const pins = [];
 
+//* Función para crear pines en el planeta
 function addPoint(lat, lon, title, desc) {
   const r = 1.3;
+
+  //* Conversión de latitud y longitud a coordenadas 3D
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lon + 180) * (Math.PI / 180);
 
@@ -105,11 +157,16 @@ function addPoint(lat, lon, title, desc) {
   const z = r * Math.sin(phi) * Math.sin(theta);
   const y = r * Math.cos(phi);
 
+  //* Material del pin
   const spriteMat = new THREE.SpriteMaterial({ map: pinTex, color: 0x00ffff });
+
   const pin = new THREE.Sprite(spriteMat);
   pin.scale.set(0.12, 0.12, 1);
+
+  //* Posición del pin
   pin.position.set(x, y, z);
 
+  //* Datos del pin
   pin.userData = {
     basePos: new THREE.Vector3(x, y, z),
     dir: new THREE.Vector3(x, y, z).normalize(),
@@ -122,6 +179,7 @@ function addPoint(lat, lon, title, desc) {
   pins.push(pin);
 }
 
+//* Pines de ejemplo
 addPoint(
   4,
   -72,
@@ -132,44 +190,61 @@ addPoint(
   50.93,
   6.95,
   "CATEDRAL DE COLONIA",
-  "Una iglesia gigante en Alemania que es puro arte.",
+  "Una iglesia gigante en Alemania.",
 );
 addPoint(56.13, -106.34, "CANADA", "Mucho frío pero paisajes increíbles.");
 addPoint(36.2, 138.25, "JAPON", "El futuro y el pasado en un solo lugar.");
 
-// --- Luces ---
+//? ===============================
+//? LUCES
+//? ===============================
+
+//* Luz principal
 const light = new THREE.PointLight(0xffffff, 1.2);
 light.position.set(5, 5, 5);
 scene.add(light);
+
+//* Luz ambiental
 scene.add(new THREE.AmbientLight(0x404040));
 
-// --- Raycaster ---
+//? ===============================
+//? DETECCIÓN DE CLIC EN PINES
+//? ===============================
+
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 window.addEventListener("click", (event) => {
+  //* Evita detectar clic si estaba arrastrando
   if (isDragging) return;
 
+  //* Convierte el clic a coordenadas 3D
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(pins);
 
+  //* Si hizo clic en un pin
   if (intersects.length > 0) {
     activePin = intersects[0].object;
     infoTitle.innerText = activePin.userData.title;
     infoDesc.innerText = activePin.userData.desc;
+
     infoBox.classList.remove("info-box-hidden");
     infoBox.classList.add("info-box-visible");
   } else {
+    //* Si no hizo clic en nada
     activePin = null;
     infoBox.classList.add("info-box-hidden");
     infoBox.classList.remove("info-box-visible");
   }
 });
 
-// --- Mouse ---
+//? ===============================
+//? ROTACIÓN CON MOUSE
+//? ===============================
+
 window.addEventListener("mousedown", () => (isDragging = true));
 window.addEventListener("mouseup", () => (isDragging = false));
 
@@ -181,81 +256,21 @@ window.addEventListener("mousemove", (e) => {
   prevMouse = { x: e.clientX, y: e.clientY };
 });
 
-// --- Touch ---
-window.addEventListener(
-  "touchstart",
-  (e) => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const isPortrait = height > width;
-
-    if (e.touches.length === 1) {
-      isDragging = true;
-      prevMouse = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-      };
-    }
-
-    if (e.touches.length === 2 && !isPortrait) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
-      initialCameraZ = camera.position.z;
-      isDragging = false;
-    }
-  },
-  { passive: false },
-);
-
-window.addEventListener(
-  "touchmove",
-  (e) => {
-    e.preventDefault();
-
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const isPortrait = height > width;
-
-    // Rotación con un dedo
-    if (e.touches.length === 1 && isDragging) {
-      const touch = e.touches[0];
-      globeGroup.rotation.y += (touch.clientX - prevMouse.x) * 0.005;
-      globeGroup.rotation.x += (touch.clientY - prevMouse.y) * 0.005;
-
-      prevMouse = {
-        x: touch.clientX,
-        y: touch.clientY,
-      };
-    }
-
-    // Zoom con dos dedos solo en horizontal
-    if (e.touches.length === 2 && initialPinchDistance && !isPortrait) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const currentDistance = Math.sqrt(dx * dx + dy * dy);
-
-      const zoomFactor = initialPinchDistance / currentDistance;
-
-      camera.position.z = Math.min(Math.max(initialCameraZ * zoomFactor, 2), 6);
-    }
-  },
-  { passive: false },
-);
+//? ===============================
+//? ZOOM CON RUEDA DEL MOUSE
+//? ===============================
 
 window.addEventListener("wheel", (e) => {
   camera.position.z = Math.min(
     Math.max(camera.position.z + e.deltaY * 0.002, 2),
-    6
+    6,
   );
-}); 
-
-window.addEventListener("touchend", () => {
-  isDragging = false;
-  initialPinchDistance = null;
 });
 
-// --- Info box ---
+//? ===============================
+//? POSICIÓN DE LA CAJA DE INFO
+//? ===============================
+
 function updateInfoBoxPosition() {
   if (!activePin) return;
 
@@ -270,18 +285,26 @@ function updateInfoBoxPosition() {
   infoBox.style.top = `${y - 20}px`;
 }
 
-// --- Animación ---
+//? ===============================
+//? ANIMACIÓN PRINCIPAL
+//? ===============================
+
 function animate() {
   requestAnimationFrame(animate);
+
   const time = Date.now() * 0.002;
 
+  //* Rotación automática del planeta
   if (!isDragging && !activePin && !isMobileDevice)
     globeGroup.rotation.y += 0.001;
 
+  //* Actualiza posición del cuadro de info
   if (activePin) updateInfoBoxPosition();
 
+  //* Parpadeo de estrellas
   starsMaterial.opacity = 0.5 + Math.sin(time * 0.5) * 0.4;
 
+  //* Rebote de pines
   if (!activePin) {
     pins.forEach((p) => {
       const bounce = Math.sin(time + p.userData.offset) * 0.03;
@@ -293,8 +316,8 @@ function animate() {
 
   renderer.render(scene, camera);
 }
-animate();
 
+animate();
 // --- Responsive ---
 function handleResize() {
   const width = window.innerWidth;
